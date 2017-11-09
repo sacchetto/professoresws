@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Single page application</title>
+    
+    <script>
+    function listar() {
+        $.ajax({
+        url: '/api/professores',
+        method: 'GET'
+        }).then(function(data) {
+            $('#tabela').empty();
+            $('#tabela').append('<tr><th>ID</th>' +
+            '<th>Nome</th>' +
+            '<th>Matrícula</th>' +
+            '<th>Área</th></tr>');
+            n = data.length;
+            for (var i=0; i<n; i++) {
+                $('#tabela').append('<tr><td>'+ data[i].id+'</td>' +
+                '<td>'+ data[i].nome + '</td>' +
+                '<td>' + data[i].matricula + '</td>' +
+                '<td>' + data[i].area + '</td></tr>');
+            }
+            addAction();
+            });
+    }
+    
+    function addAction(){
+        $('#tabela').find('tr').each(function(){
+            $(this).find('th').eq(n).after('<th>Ação</th>');
+            $(this).find('td').eq(n).after("<td><p><input type='button' value = 'Editar'></p></td>");
+        });
+    }
+    
+    function remover() {
+        $.ajax({
+            url: '/api/professores/' + $('#txtId').val(),
+            method: 'DELETE',
+            error: function(xhr, options, code) {
+            $('#txtId').val('');
+            alert(xhr.responseText);
+        }
+        }).then(function(data) {
+                $('#txtId').val('');
+            listar();
+        });
+        }
+        
+    function atualizar() {
+        $.ajax({
+            url: '/api/professores/' + $('#txtIdAtu').val(),
+            method: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                id: $('#txtIdAtu').val(),
+                nome: $('#txtNomeAtu').val(),
+                matricula: $('#txtMatriculaAtu').val(),
+                area: $('#txtAreaAtu').val()
+            })
+        }).then(function(data) {
+            $('#txtIdAtu').val('');
+            $('#txtNomeAtu').val('');
+            $('#txtMatriculaAtu').val('');
+            $('#txtAreaAtu').val('');
+            
+            listar();
+    });
+    }
+
+    function buscarId() {
+        $.ajax({
+            url: '/api/professores/' + $('#txtIdBusca').val(),
+            method: 'GET'
+        }).then(function(data) {
+            $('#tabela').empty();
+            $('#tabela').append('<tr><th>ID</th>' +
+            '<th>Nome</th>' +
+            '<th>Matrícula</th>' +
+            '<th>Área</th></tr>');
+                $('#tabela').append('<tr><td>'+ data.id+'</td>' +
+                '<td>'+ data.nome + '</td>' +
+                '<td>' + data.matricula + '</td>' +
+                '<td>' + data.area + '</td></tr>');
+            });
+    }
+    
+    function criar() {
+        $.ajax({
+        url: '/api/professores',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({
+        nome: $('#txtNome').val(),
+        matricula: $('#txtMatricula').val(),
+        area: $('#txtArea').val()
+        })
+        }).then(function(data) {
+            $('#txtNome').val('');
+            $('#txtMatricula').val('');
+            $('#txtArea').val('');
+            listar();
+        });
+        }    
+
+    </script>
+</head>
+<body>
+
+<h1>Buscar pelo ID</h1>
+<p>ID: <input type="text" id="txtIdBusca">
+<p><input type="button" value = "Buscar" onclick="buscarId()"></p>
+
+<h1>Listagem dos Professores</h1>
+<p><input type="button" value="Listar" onclick="listar()"></p>
+<table border="1" id="tabela">
+</table>
+
+<h1>Criação de um professor</h1>
+<p>Nome: <input type="text" id="txtNome"></p>
+<p>Matrícula: <input type="text" id="txtMatricula"></p>
+<p>Área: <input type="text" id="txtArea"></p>
+<p><input type="button" value="Criar" onclick="criar()"></p>
+
+
+<h1>Atualização de um professor</h1>
+<p>ID: <input type="text" id="txtIdAtu"></p>
+<p>Nome: <input type="text" id="txtNomeAtu"></p>
+<p>Matrícula: <input type="text" id="txtMatriculaAtu"></p>
+<p>Área: <input type="text" id="txtAreaAtu"></p>
+<p><input type="button" value="Atualizar" onclick="atualizar()"></p>
+
+
+<h1>Remoção de um professor</h1>
+<p>ID: <input type="text" id="txtId">
+<input type="button" onclick="remover()" value="Remover"></p>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+curl -X POST http://localhost:8080/api/professores -d '{"nome":"Fabio", "matricula":"11122", "area":"IoT", "contratacao":"2013-06-30"}' -H "Content-Type: application/json"
